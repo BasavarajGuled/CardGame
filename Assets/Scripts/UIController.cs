@@ -28,12 +28,18 @@ public class UIController : MonoBehaviour
 
         easyModeToggle.isOn = true; // Default to Easy mode
 
-        SetUICanvasState(1, true, true);
+        SetUICanvasState(true);
+        CardGenerator.generateCardEvent += SetUICanvasState;
+    }
+
+    void OnDestroy()
+    {
+        CardGenerator.generateCardEvent -= SetUICanvasState;
     }
 
     private void OnPlayButtonClicked()
     {
-        SetUICanvasState(0, false, false);
+        GameManager.Instance.cardGenerator.GenerateCards();
     }
 
     private void OnEasyModeToggleChanged(bool arg0)
@@ -51,10 +57,10 @@ public class UIController : MonoBehaviour
         GameManager.Instance.currentGameState = GameState.Hard;
     }
 
-    private void SetUICanvasState(float alpha, bool interactable, bool blocksRaycasts)
+    private void SetUICanvasState(bool isActivate)
     {
-        uiCanvasGroup.alpha = alpha;
-        uiCanvasGroup.interactable = interactable;
-        uiCanvasGroup.blocksRaycasts = blocksRaycasts;
+        uiCanvasGroup.alpha = isActivate ? 1 : 0;
+        uiCanvasGroup.interactable = isActivate;
+        uiCanvasGroup.blocksRaycasts = isActivate;
     }
 }

@@ -5,10 +5,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+
     [SerializeField]
     private CardManager cardManager;
     [SerializeField]
     private UIController uiController;
+    [SerializeField]
+    internal CardGenerator cardGenerator;
 
     internal GameState currentGameState { get; set; } = GameState.Easy;
 

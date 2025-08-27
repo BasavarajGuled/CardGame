@@ -8,9 +8,7 @@ public class Card : MonoBehaviour
     private Transform flipingCard;
     [SerializeField]
     private Button cardButton;
-    [SerializeField]
-    private int cardIndex;
-    public int CardIndex => cardIndex;
+    public int CardIndex;
 
     private bool isFliped = false;
     public bool IsFliped
