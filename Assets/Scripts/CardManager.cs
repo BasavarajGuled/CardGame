@@ -6,41 +6,48 @@ using UnityEngine.UI;
 
 public class CardManager : MonoBehaviour
 {
-    public AudioSource audioSource;
-    public List<AudioClip> clips;
-
+    [SerializeField]
+    private TMPro.TextMeshProUGUI matchCount;
+    private int matchCounter = 0;
+    [SerializeField]
+    private TMPro.TextMeshProUGUI turnCount;
+    private int turnCounter = 0;
+    [SerializeField]
+    private AudioSource audioSource;
+    [SerializeField]
+    private List<AudioClip> clips;
     public List<Card> cards;
 
-    public GraphicRaycaster raycaster;   // Assign your Canvas's GraphicRaycaster
-    public EventSystem eventSystem;      // Assign your EventSystem
+    #region Debugging
+    // public GraphicRaycaster raycaster;   // Assign your Canvas's GraphicRaycaster
+    // public EventSystem eventSystem;      // Assign your EventSystem
+    // private PointerEventData pointerEventData;
+    // private List<RaycastResult> results = new List<RaycastResult>();
+    // void Update()
+    // {
+    //     if (Input.GetMouseButtonDown(0)) // Left click
+    //     {
+    //         // Create new PointerEventData
+    //         pointerEventData = new PointerEventData(eventSystem)
+    //         {
+    //             position = Input.mousePosition
+    //         };
 
-    private PointerEventData pointerEventData;
-    private List<RaycastResult> results = new List<RaycastResult>();
+    //         // Clear old results
+    //         results.Clear();
 
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0)) // Left click
-        {
-            // Create new PointerEventData
-            pointerEventData = new PointerEventData(eventSystem)
-            {
-                position = Input.mousePosition
-            };
+    //         // Raycast into UI
+    //         raycaster.Raycast(pointerEventData, results);
 
-            // Clear old results
-            results.Clear();
-
-            // Raycast into UI
-            raycaster.Raycast(pointerEventData, results);
-
-            // Check what was hit
-            foreach (RaycastResult result in results)
-            {
-                Debug.Log("Clicked on: " + result.gameObject.name);
-                // 👉 You can also check tags, components, etc.
-            }
-        }
-    }
+    //         // Check what was hit
+    //         foreach (RaycastResult result in results)
+    //         {
+    //             Debug.Log("Clicked on: " + result.gameObject.name);
+    //             // 👉 You can also check tags, components, etc.
+    //         }
+    //     }
+    // }
+    #endregion
 
     public void PlayClip(int clipIndex)
     {
@@ -54,6 +61,8 @@ public class CardManager : MonoBehaviour
     public void MatchFound()
     {
         PlayClip(0); // Play a sound for a match found\
+        MatchCounter();
+        TurnCounter();
         foreach (var card in cards)
         {
             Destroy(card.gameObject);
@@ -63,6 +72,7 @@ public class CardManager : MonoBehaviour
     public void NoMatchFound()
     {
         PlayClip(1); // Play a sound for no match found
+        TurnCounter();
         foreach (var card in cards)
         {
             card.ResetCard();
@@ -97,4 +107,17 @@ public class CardManager : MonoBehaviour
             cards.Clear();
         }
     }
+
+    private void MatchCounter()
+    {
+        matchCounter++;
+        matchCount.text = matchCounter.ToString();
+    }
+
+    private void TurnCounter()
+    {
+        turnCounter++;
+        turnCount.text = turnCounter.ToString();
+    }
+
 }

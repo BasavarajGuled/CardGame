@@ -20,9 +20,15 @@ public class Card : MonoBehaviour
         {
             isFliped = value;
             if (isFliped)
+            {
+                flipingCard.localScale = Vector3.one;
                 cardButton.interactable = false;
+            }
             else
+            {
+                flipingCard.localScale = Vector3.zero;
                 cardButton.interactable = true;
+            }
         }
     }
 
@@ -41,21 +47,19 @@ public class Card : MonoBehaviour
     {
         if (!isFliped)
         {
-            flipingCard.localScale = Vector3.one;
             IsFliped = true;
             cardManager.CardFliped();
             addToManagerCoroutine = StartCoroutine(AddToManager());
         }
         else
         {
-            flipingCard.localScale = Vector3.zero;
+
             IsFliped = false;
         }
     }
 
     internal void ResetCard()
     {
-        flipingCard.localScale = Vector3.zero;
         IsFliped = false;
     }
 
