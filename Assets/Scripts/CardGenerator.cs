@@ -84,21 +84,39 @@ public class CardGenerator : MonoBehaviour
     private void LoadCards()
     {
         List<int> availableIndices = new List<int>();
-        for (int i = 0; i < cardTransforms.Count; i++)
+        for (int i = 0; i < cardTransforms.Count / 2; i++)
         {
+            availableIndices.Add(i);
             availableIndices.Add(i);
         }
 
-        System.Random rng = new System.Random();
-        while (availableIndices.Count > 0)
+        // System.Random rng = new System.Random();
+        // while (availableIndices.Count > 0)
+        // {
+        //     int randomIdx = rng.Next(availableIndices.Count);
+        //     int cardTransformIndex = availableIndices[randomIdx];
+        //     Card card = Instantiate(cardPrefab, cardTransforms[randomIdx]);
+        //     card.CardIndex = cardTransformIndex;
+        //     Debug.Log($"Card generated: {card.CardIndex}");
+        //     availableIndices.RemoveAt(randomIdx);
+        // }
+
+        // Shuffle availableIndices
+        for (int i = 0; i < availableIndices.Count; i++)
         {
-            int randomIdx = rng.Next(availableIndices.Count);
-            int cardTransformIndex = availableIndices[randomIdx];
-            Card card = Instantiate(cardPrefab, cardTransforms[cardTransformIndex]);
-            Debug.Log($"Card generated: {card.CardIndex}");
-            availableIndices.RemoveAt(randomIdx);
+            int rand = Random.Range(i, availableIndices.Count);
+            int temp = availableIndices[i];
+            availableIndices[i] = availableIndices[rand];
+            availableIndices[rand] = temp;
+        }
+
+        // Instantiate cards
+        for (int i = 0; i < availableIndices.Count; i++)
+        {
+            Card card = Instantiate(cardPrefab, cardTransforms[i]);
+            card.CardIndex = availableIndices[i];
+            card.transform.parent.name = availableIndices[i].ToString(); //debugging
         }
     }
-
 
 }
