@@ -8,9 +8,16 @@ public class Card : MonoBehaviour
     private Transform flipingCard;
     [SerializeField]
     private Button cardButton;
-    public int CardIndex;
+    public int cardIndex;
+
+    [SerializeField]
+    private Image cardImage;
 
     private bool isFliped = false;
+
+    /// <summary>
+    /// Indicates whether the card is flipped. When set, it updates the visual state and interactivity of the card.
+    /// </summary>
     public bool IsFliped
     {
         get { return isFliped; }
@@ -56,11 +63,18 @@ public class Card : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Resets the card to its initial unflipped state.
+    /// </summary>
     internal void ResetCard()
     {
         IsFliped = false;
     }
 
+    /// <summary>
+    /// Adds the card to the CardManager after a short delay to ensure the flip animation is visible.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator AddToManager()
     {
         yield return new WaitForSeconds(0.5f);
@@ -69,6 +83,12 @@ public class Card : MonoBehaviour
         {
             StopCoroutine(addToManagerCoroutine);
         }
+    }
+
+    public void SetCardIndex(int index)
+    {
+        cardIndex = index;
+        cardImage.sprite = GameManager.Instance.cardSprites[cardIndex];
     }
 
 }

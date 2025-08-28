@@ -18,27 +18,48 @@ public class CardGenerator : MonoBehaviour
     private Transform currentCardParent;
 
     public delegate void GenerateCardEvent(bool isActivate);
+    /// <summary>
+    /// Event triggered when cards are generated or the UI state needs to change.
+    /// </summary>
     public static event GenerateCardEvent generateCardEvent;
 
+    public int totalMatchCount;
+
+    [SerializeField]
+    private List<Card> cards;
+    private Coroutine animateCardsCoroutine;
+
+    /// <summary>
+    /// Generates cards based on the current game state.
+    /// </summary>
     public void GenerateCards()
     {
+        cards.Clear();
+        ResetCards();
         if (GameManager.Instance.currentGameState == GameState.Easy)
         {
             EasyMode();
             generateCardEvent?.Invoke(false);
+            animateCardsCoroutine = StartCoroutine(AnimateCards(1.0f));
         }
         else if (GameManager.Instance.currentGameState == GameState.Medium)
         {
             MediumMode();
             generateCardEvent?.Invoke(false);
+            animateCardsCoroutine = StartCoroutine(AnimateCards(2.0f));
         }
         else if (GameManager.Instance.currentGameState == GameState.Hard)
         {
             HardMode();
             generateCardEvent?.Invoke(false);
+            animateCardsCoroutine = StartCoroutine(AnimateCards());
         }
+
     }
 
+    /// <summary>
+    /// Handles the Easy mode card generation.
+    /// </summary>
     private void EasyMode()
     {
         // Implement Easy mode card generation
@@ -47,6 +68,9 @@ public class CardGenerator : MonoBehaviour
         LoadCards();
     }
 
+    /// <summary>
+    /// Handles the Medium mode card generation.
+    /// </summary>
     private void MediumMode()
     {
         // Implement Medium mode card generation
@@ -55,6 +79,9 @@ public class CardGenerator : MonoBehaviour
         LoadCards();
     }
 
+    /// <summary>
+    /// Handles the Hard mode card generation.
+    /// </summary>
     private void HardMode()
     {
         SetCardParent(2);
@@ -62,18 +89,27 @@ public class CardGenerator : MonoBehaviour
         LoadCards();
     }
 
+    /// <summary>
+    /// Sets the active card parent based on the provided index.
+    /// </summary>
+    /// <param name="index"></param>
     private void SetCardParent(int index)
     {
-        foreach (Transform child in cardHolder.transform)
+        for (int i = 0; i < cardParents.Length; i++)
         {
-            child.gameObject.SetActive(false);
+            cardParents[i].gameObject.SetActive(false);
         }
         cardParents[index].gameObject.SetActive(true);
         currentCardParent = cardParents[index];
     }
 
+    /// <summary>
+    /// Loads card parent transforms and sets the total match count.
+    /// </summary>
+    /// <param name="Count"></param>
     private void LoadCardParent(int Count)
     {
+        totalMatchCount = Count / 2;
         for (int i = 0; i < Count; i++)
         {
             Transform cardTransform = Instantiate(cardHolder, currentCardParent).transform;
@@ -81,6 +117,9 @@ public class CardGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Loads and instantiates cards, assigning them random indices for matching.
+    /// </summary>
     private void LoadCards()
     {
         List<int> availableIndices = new List<int>();
@@ -114,9 +153,47 @@ public class CardGenerator : MonoBehaviour
         for (int i = 0; i < availableIndices.Count; i++)
         {
             Card card = Instantiate(cardPrefab, cardTransforms[i]);
-            card.CardIndex = availableIndices[i];
-            card.transform.parent.name = availableIndices[i].ToString(); //debugging
+            cards.Add(card);
+            card.SetCardIndex(availableIndices[i]);
+            card.transform.parent.name = availableIndices[i].ToString() + "_" + i; //debugging
         }
     }
 
+    /// <summary>
+    /// Animates the cards by flipping them for a specified delay.
+    /// </summary>
+    /// <param name="delay"></param>
+    /// <returns></returns>
+    private IEnumerator AnimateCards(float delay = 4.0f)
+    {
+        yield return new WaitForSeconds(0.5f);
+        foreach (var card in cards)
+        {
+            card.IsFliped = true;
+        }
+        yield return new WaitForSeconds(delay);
+        foreach (var card in cards)
+        {
+            card.IsFliped = false;
+        }
+        if (animateCardsCoroutine != null)
+            StopCoroutine(animateCardsCoroutine);
+    }
+
+    /// <summary>
+    /// Resets the cards by clearing the current card parent and deactivating all card parents.
+    /// </summary>
+    public void ResetCards()
+    {
+        if (currentCardParent == null) return;
+        for (int i = 0; i < cardParents.Length; i++)
+        {
+            cardParents[i].gameObject.SetActive(false);
+        }
+        foreach (Transform child in currentCardParent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        cardTransforms.Clear();
+    }
 }
