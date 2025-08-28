@@ -34,19 +34,17 @@ public class CardGenerator : MonoBehaviour
     /// </summary>
     public void GenerateCards()
     {
-        cards.Clear();
-        ResetCards();
         if (GameManager.Instance.currentGameState == GameState.Easy)
         {
             EasyMode();
             generateCardEvent?.Invoke(false);
-            animateCardsCoroutine = StartCoroutine(AnimateCards(1.0f));
+            animateCardsCoroutine = StartCoroutine(AnimateCards(0.5f));
         }
         else if (GameManager.Instance.currentGameState == GameState.Medium)
         {
             MediumMode();
             generateCardEvent?.Invoke(false);
-            animateCardsCoroutine = StartCoroutine(AnimateCards(2.0f));
+            animateCardsCoroutine = StartCoroutine(AnimateCards(0.5f));
         }
         else if (GameManager.Instance.currentGameState == GameState.Hard)
         {
@@ -87,6 +85,9 @@ public class CardGenerator : MonoBehaviour
         SetCardParent(2);
         LoadCardParent(30);
         LoadCards();
+        // SetCardParent(0);
+        // LoadCardParent(4);
+        // LoadCards();
     }
 
     /// <summary>
@@ -164,7 +165,7 @@ public class CardGenerator : MonoBehaviour
     /// </summary>
     /// <param name="delay"></param>
     /// <returns></returns>
-    private IEnumerator AnimateCards(float delay = 4.0f)
+    private IEnumerator AnimateCards(float delay = 2.0f)
     {
         yield return new WaitForSeconds(0.5f);
         foreach (var card in cards)
@@ -185,6 +186,7 @@ public class CardGenerator : MonoBehaviour
     /// </summary>
     public void ResetCards()
     {
+        cards.Clear();
         if (currentCardParent == null) return;
         for (int i = 0; i < cardParents.Length; i++)
         {

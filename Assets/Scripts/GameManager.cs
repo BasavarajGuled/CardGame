@@ -23,9 +23,13 @@ public class GameManager : MonoBehaviour
     internal Sprite[] cardSprites;
 
     [SerializeField]
-    private AudioSource audioSource;
+    private AudioSource audioSourceMusic;
+    [SerializeField]
+    private AudioSource audioSourceButtonClick;
     [SerializeField]
     private List<AudioClip> clips;
+
+    public static bool isAutoClicking = false;
 
     private void Awake()
     {
@@ -38,14 +42,21 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        PlayMusic(0); // Play background music
     }
 
     /// <summary>
     /// Resets the game by resetting the card manager and generating new cards.
     /// </summary>
-    public void ResetGame()
+    internal void ResetGame()
     {
-        cardManager.ResetCards();
+        cardManager.ResetCounters();
+        cardGenerator.ResetCards();
+    }
+
+    internal void LoadGame()
+    {
         cardGenerator.GenerateCards();
     }
 
@@ -53,9 +64,15 @@ public class GameManager : MonoBehaviour
     {
         if (clipIndex >= 0 && clipIndex < clips.Count)
         {
-            audioSource.clip = clips[clipIndex];
-            audioSource.Play();
+            audioSourceMusic.clip = clips[clipIndex];
+            audioSourceMusic.Play();
         }
+    }
+
+    internal void PlayButtonClickSound()
+    {
+        if (!isAutoClicking)
+            audioSourceButtonClick.PlayOneShot(clips[2]);
     }
 }
 

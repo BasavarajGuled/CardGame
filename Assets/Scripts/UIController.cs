@@ -37,8 +37,18 @@ public class UIController : MonoBehaviour
         hardModeToggle.onValueChanged.AddListener(OnHardModeToggleChanged);
 
         nextButton.onClick.AddListener(OnNextScreenButtonClicked);
-        homeButton.onClick.AddListener(() => ShowScreen(true, false, false));
+        homeButton.onClick.AddListener(() =>
+        {
+            ShowScreen(true, false, false);
+            GameManager.Instance.PlayButtonClickSound(); // Play button click sound
+            SetToggleState();
+            GameManager.Instance.ResetGame();
+            GameManager.Instance.PlayMusic(0); // Play game over music
+        });
+
+        GameManager.isAutoClicking = true;
         easyModeToggle.isOn = true; // Default to Easy mode
+        GameManager.isAutoClicking = false;
 
         ShowScreen(true, false, false);
         CardGenerator.generateCardEvent += SetUICanvasState;
@@ -52,21 +62,25 @@ public class UIController : MonoBehaviour
     private void OnPlayButtonClicked()
     {
         GameManager.Instance.cardGenerator.GenerateCards();
+        GameManager.Instance.PlayButtonClickSound(); // Play button click sound
     }
 
     private void OnEasyModeToggleChanged(bool arg0)
     {
         GameManager.Instance.currentGameState = GameState.Easy;
+        GameManager.Instance.PlayButtonClickSound(); // Play button click sound
     }
 
     private void OnMediumModeToggleChanged(bool arg0)
     {
         GameManager.Instance.currentGameState = GameState.Medium;
+        GameManager.Instance.PlayButtonClickSound(); // Play button click sound
     }
 
     private void OnHardModeToggleChanged(bool arg0)
     {
         GameManager.Instance.currentGameState = GameState.Hard;
+        GameManager.Instance.PlayButtonClickSound(); // Play button click sound
     }
 
     /// <summary>
@@ -85,7 +99,9 @@ public class UIController : MonoBehaviour
     /// </summary>
     private void OnNextScreenButtonClicked()
     {
+        GameManager.Instance.PlayButtonClickSound(); // Play button click sound
         GameManager.Instance.ResetGame();
+        GameManager.Instance.LoadGame();
         SetUICanvasState(false);
     }
 
@@ -97,11 +113,15 @@ public class UIController : MonoBehaviour
     /// <param name="isGameOver"></param>
     public void ShowScreen(bool isHome, bool isNext, bool isGameOver)
     {
-        SetToggleState();
+        //SetToggleState();
         homeScreenPanel.SetActive(isHome);
         nextScreenPanel.SetActive(isNext);
         gameOverPanel.SetActive(isGameOver);
         SetUICanvasState(true);
+        if (isGameOver)
+        {
+            GameManager.Instance.PlayMusic(1); // Play game over music
+        }
     }
 
     /// <summary>
@@ -109,11 +129,13 @@ public class UIController : MonoBehaviour
     /// </summary>
     private void SetToggleState()
     {
+        GameManager.isAutoClicking = true;
         if (GameManager.Instance.currentGameState == GameState.Easy)
             easyModeToggle.isOn = true;
         else if (GameManager.Instance.currentGameState == GameState.Medium)
             mediumModeToggle.isOn = true;
         else if (GameManager.Instance.currentGameState == GameState.Hard)
             hardModeToggle.isOn = true;
+        GameManager.isAutoClicking = false;
     }
 }

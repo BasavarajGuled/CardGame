@@ -61,8 +61,7 @@ public class CardManager : MonoBehaviour
     {
         if (clipIndex >= 0 && clipIndex < clips.Count)
         {
-            audioSource.clip = clips[clipIndex];
-            audioSource.Play();
+            audioSource.PlayOneShot(clips[clipIndex]);
         }
     }
 
@@ -187,7 +186,7 @@ public class CardManager : MonoBehaviour
     /// <summary>
     /// Resets the game state, including match and turn counters, and clears the list of cards.
     /// </summary>
-    public void ResetCards()
+    public void ResetCounters()
     {
         matchCounter = 0;
         turnCounter = 0;
