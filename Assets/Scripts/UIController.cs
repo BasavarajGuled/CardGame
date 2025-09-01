@@ -19,6 +19,16 @@ public class UIController : MonoBehaviour
     private Button nextButton;
     [SerializeField]
     private Button homeButton;
+    [SerializeField]
+    private Button settingButton;
+    [SerializeField]
+    private Button settingBackButton;
+    private bool isSetting = false;
+
+    [SerializeField]
+    private Button reload;
+    [SerializeField]
+    private Button save;
 
     [SerializeField]
     private CanvasGroup uiCanvasGroup;
@@ -28,6 +38,8 @@ public class UIController : MonoBehaviour
     private GameObject nextScreenPanel;
     [SerializeField]
     private GameObject gameOverPanel;
+    [SerializeField]
+    private GameObject settingPanel;
 
     private void Start()
     {
@@ -45,6 +57,11 @@ public class UIController : MonoBehaviour
             GameManager.Instance.ResetGame();
             GameManager.Instance.PlayMusic(0); // Play game over music
         });
+        settingButton.onClick.AddListener(() => OnSettingClick());
+        settingBackButton.onClick.AddListener(() => OnSettingClick());
+        reload.onClick.AddListener(() => OnReloadClick());
+        save.onClick.AddListener(() => OnSaveClick());
+
 
         GameManager.isAutoClicking = true;
         easyModeToggle.isOn = true; // Default to Easy mode
@@ -111,12 +128,13 @@ public class UIController : MonoBehaviour
     /// <param name="isHome"></param>
     /// <param name="isNext"></param>
     /// <param name="isGameOver"></param>
-    public void ShowScreen(bool isHome, bool isNext, bool isGameOver)
+    public void ShowScreen(bool isHome, bool isNext, bool isGameOver, bool isSetting = false)
     {
         //SetToggleState();
         homeScreenPanel.SetActive(isHome);
         nextScreenPanel.SetActive(isNext);
         gameOverPanel.SetActive(isGameOver);
+        settingPanel.SetActive(isSetting);
         SetUICanvasState(true);
         if (isGameOver)
         {
@@ -137,5 +155,29 @@ public class UIController : MonoBehaviour
         else if (GameManager.Instance.currentGameState == GameState.Hard)
             hardModeToggle.isOn = true;
         GameManager.isAutoClicking = false;
+    }
+
+    /// <summary>
+    /// sets the setting panel active
+    /// </summary>
+    private void OnSettingClick()
+    {
+        GameManager.Instance.PlayButtonClickSound(); // Play button click sound
+        isSetting = !isSetting;
+        if (isSetting)
+            ShowScreen(false, false, false, true);
+        else
+            ShowScreen(true, false, false);
+    }
+
+    private void OnReloadClick()
+    {
+        GameManager.Instance.ResetGame();
+        GameManager.Instance.LoadGame();
+    }
+
+    private void OnSaveClick()
+    {
+
     }
 }
