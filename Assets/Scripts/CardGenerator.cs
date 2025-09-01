@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class CardGenerator : MonoBehaviour
@@ -114,6 +115,7 @@ public class CardGenerator : MonoBehaviour
         for (int i = 0; i < Count; i++)
         {
             Transform cardTransform = Instantiate(cardHolder, currentCardParent).transform;
+            cardTransform.gameObject.name = i.ToString();
             cardTransforms.Add(cardTransform);
         }
     }
@@ -156,7 +158,8 @@ public class CardGenerator : MonoBehaviour
             Card card = Instantiate(cardPrefab, cardTransforms[i]);
             cards.Add(card);
             card.SetCardIndex(availableIndices[i]);
-            card.transform.parent.name = availableIndices[i].ToString() + "_" + i; //debugging
+            card.gameObject.name = availableIndices[i].ToString();
+            //card.transform.parent.name = availableIndices[i].ToString() + "_" + i; //debugging
         }
     }
 
@@ -198,4 +201,81 @@ public class CardGenerator : MonoBehaviour
         }
         cardTransforms.Clear();
     }
+
+    internal void SaveCards()
+    {
+        SavedLevelCards savedLevelCards = new SavedLevelCards();
+
+        savedLevelCards.matchCount = GameManager.Instance.cardManager.matchCounter;
+        savedLevelCards.turnCount = GameManager.Instance.cardManager.turnCounter;
+        savedLevelCards.gameState = GameManager.Instance.currentGameState;
+
+        savedLevelCards.savedCard = new List<SavedCard>();
+
+        int i = 0;
+        foreach (Transform child in cardTransforms)
+        {
+            SavedCard card = new SavedCard();
+            card.holderIndex = int.Parse(child.gameObject.name);
+            if (child.childCount > 0)
+                card.cardIndex = int.Parse(child.GetChild(0).gameObject.name);
+            else
+                card.cardIndex = -1;
+            savedLevelCards.savedCard.Add(card);
+
+            i++;
+        }
+
+        string json = JsonUtility.ToJson(savedLevelCards, true);
+        File.WriteAllText(GameManager.savedCardsPath, json);
+
+        Debug.Log("Saved: " + json);
+    }
+
+    public void GenerateSavedCards()
+    {
+        if (GameManager.Instance.currentGameState == GameState.Easy)
+        {
+            SetCardParent(0);
+            LoadCardParent(4);
+            generateCardEvent?.Invoke(false);
+        }
+        else if (GameManager.Instance.currentGameState == GameState.Medium)
+        {
+            SetCardParent(1);
+            LoadCardParent(6);
+            generateCardEvent?.Invoke(false);
+        }
+        else if (GameManager.Instance.currentGameState == GameState.Hard)
+        {
+            SetCardParent(2);
+            LoadCardParent(30);
+            generateCardEvent?.Invoke(false);
+        }
+        LoadSavedCards();
+    }
+
+    private void LoadSavedCards()
+    {
+        string json = File.ReadAllText(GameManager.savedCardsPath);
+        SavedLevelCards data = JsonUtility.FromJson<SavedLevelCards>(json);
+
+        GameManager.Instance.cardManager.matchCounter = data.matchCount;
+        GameManager.Instance.cardManager.turnCounter = data.turnCount;
+
+        GameManager.Instance.cardManager.SetMatchTurnCount();
+
+        for (int i = 0; i < cardTransforms.Count; i++)
+        {
+            if (data.savedCard[i].cardIndex != -1)
+            {
+                Card card = Instantiate(cardPrefab, cardTransforms[i]);
+                cards.Add(card);
+                card.SetCardIndex(data.savedCard[i].cardIndex);
+                card.gameObject.name = data.savedCard[i].cardIndex.ToString();
+                //card.transform.parent.name = availableIndices[i].ToString() + "_" + i; //debugging
+            }
+        }
+    }
+
 }

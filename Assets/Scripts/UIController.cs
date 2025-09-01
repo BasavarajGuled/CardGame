@@ -1,17 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
     [SerializeField]
-    private Toggle easyModeToggle;
+    internal Toggle easyModeToggle;
     [SerializeField]
-    private Toggle mediumModeToggle;
+    internal Toggle mediumModeToggle;
     [SerializeField]
-    private Toggle hardModeToggle;
+    internal Toggle hardModeToggle;
 
     [SerializeField]
     private Button playButton;
@@ -41,7 +42,7 @@ public class UIController : MonoBehaviour
     [SerializeField]
     private GameObject settingPanel;
 
-    private void Start()
+    private void Awake()
     {
         playButton.onClick.AddListener(OnPlayButtonClicked);
         easyModeToggle.onValueChanged.AddListener(OnEasyModeToggleChanged);
@@ -62,11 +63,6 @@ public class UIController : MonoBehaviour
         reload.onClick.AddListener(() => OnReloadClick());
         save.onClick.AddListener(() => OnSaveClick());
 
-
-        GameManager.isAutoClicking = true;
-        easyModeToggle.isOn = true; // Default to Easy mode
-        GameManager.isAutoClicking = false;
-
         ShowScreen(true, false, false);
         CardGenerator.generateCardEvent += SetUICanvasState;
     }
@@ -78,7 +74,8 @@ public class UIController : MonoBehaviour
 
     private void OnPlayButtonClicked()
     {
-        GameManager.Instance.cardGenerator.GenerateCards();
+        GameManager.Instance.ResetGame();
+        GameManager.Instance.LoadGame();
         GameManager.Instance.PlayButtonClickSound(); // Play button click sound
     }
 
@@ -178,6 +175,9 @@ public class UIController : MonoBehaviour
 
     private void OnSaveClick()
     {
-
+        GameManager.Instance.SaveLevel();
+        GameManager.Instance.SaveCards();
     }
+
+
 }

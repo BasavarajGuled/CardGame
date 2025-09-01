@@ -10,10 +10,10 @@ public class CardManager : MonoBehaviour
 {
     [SerializeField]
     private TMPro.TextMeshProUGUI matchCount;
-    private int matchCounter = 0;
+    internal int matchCounter = 0;
     [SerializeField]
     private TMPro.TextMeshProUGUI turnCount;
-    private int turnCounter = 0;
+    internal int turnCounter = 0;
     [SerializeField]
     private AudioSource audioSource;
     [SerializeField]
@@ -176,7 +176,7 @@ public class CardManager : MonoBehaviour
     private IEnumerator ShowScreenAfterDelay(float delay, bool showHome, bool showNext, bool showGameOver)
     {
         yield return new WaitForSeconds(delay);
-        GameManager.Instance.UIController.ShowScreen(showHome, showNext, showGameOver);
+        GameManager.Instance.uiController.ShowScreen(showHome, showNext, showGameOver);
         if (showScreenCoroutine != null)
         {
             StopCoroutine(showScreenCoroutine);
@@ -193,5 +193,11 @@ public class CardManager : MonoBehaviour
         matchCount.text = matchCounter.ToString();
         turnCount.text = turnCounter.ToString();
         cards.Clear();
+    }
+
+    public void SetMatchTurnCount()
+    {
+        matchCount.text = matchCounter.ToString();
+        turnCount.text = turnCounter.ToString();
     }
 }

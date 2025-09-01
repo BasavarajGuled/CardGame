@@ -13,17 +13,12 @@ public class AudioController : MonoBehaviour
     private AudioSource clickGamePlayAudioSources;
 
     [SerializeField]
-    private Slider musicSlider;
+    internal Slider musicSlider;
     [SerializeField]
-    private Slider vfxSlider;
-
-    private string savePath;
-
+    internal Slider vfxSlider;
     void Awake()
     {
-        savePath = Path.Combine(Application.persistentDataPath, "settings.json");
         AssignListener();
-        LoadScore();
     }
 
     private void AssignListener()
@@ -48,7 +43,7 @@ public class AudioController : MonoBehaviour
         settings.VFX = clickGamePlayAudioSources.volume;
 
         string json = JsonUtility.ToJson(settings, true);
-        File.WriteAllText(savePath, json);
+        File.WriteAllText(GameManager.audioSettingPath, json);
 
         Debug.Log("Saved: " + json);
     }
@@ -63,33 +58,8 @@ public class AudioController : MonoBehaviour
         settings.Music = musicAudioSource.volume;
 
         string json = JsonUtility.ToJson(settings, true);
-        File.WriteAllText(savePath, json);
+        File.WriteAllText(GameManager.audioSettingPath, json);
 
         Debug.Log("Saved: " + json);
     }
-
-    public void LoadScore()
-    {
-        if (File.Exists(savePath))
-        {
-            string json = File.ReadAllText(savePath);
-            GameSetting data = JsonUtility.FromJson<GameSetting>(json);
-            Debug.Log("Loaded: " + json);
-            musicSlider.value = data.Music;
-            vfxSlider.value = data.VFX;
-        }
-        else
-        {
-            Debug.LogWarning("No save file found, returning 0");
-            musicSlider.value = 0.5f;
-            vfxSlider.value = 0.5f;
-        }
-    }
-}
-
-[Serializable]
-public class GameSetting
-{
-    public float Music;
-    public float VFX;
 }

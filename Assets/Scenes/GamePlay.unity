@@ -5315,6 +5315,7 @@ MonoBehaviour:
   cardManager: {fileID: 408927298}
   uiController: {fileID: 1290097825}
   cardGenerator: {fileID: 1292807339}
+  audioController: {fileID: 1087394126}
   cardSprites:
   - {fileID: 21300000, guid: 27f08d6e991c6de4c8a3d03d04e23308, type: 3}
   - {fileID: 21300000, guid: 8e08fd1f3ec241c4eb30cfa42bbb76e0, type: 3}
